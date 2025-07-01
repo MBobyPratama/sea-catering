@@ -3,17 +3,17 @@ import { Head } from '@inertiajs/react';
 
 const testimonials = [
     {
-        name: 'John Doe',
+        name: 'Michael Johnson',
         review: 'The meals are delicious and have helped me a lot in my diet program. Highly recommended!',
         rating: 5,
     },
     {
-        name: 'Jane Smith',
+        name: 'Kimberly Smith',
         review: 'Excellent service and food quality. The delivery is always on time.',
         rating: 5,
     },
     {
-        name: 'Samuel Wilson',
+        name: 'David Brown',
         review: 'A great choice for healthy and practical food. The menu is very varied.',
         rating: 4,
     },

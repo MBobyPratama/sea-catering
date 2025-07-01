@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -12,9 +14,9 @@ Route::get('/contact', function () {
 })->name('contact');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('subscription/{subscription}/pause', [DashboardController::class, 'pauseSubscription'])->name('subscription.pause');
+    Route::post('subscription/{subscription}/cancel', [DashboardController::class, 'cancelSubscription'])->name('subscription.cancel');
 
     Route::get('/menu', function () {
         return Inertia::render('Menu');
@@ -23,6 +25,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/subscription', function () {
         return Inertia::render('Subscription');
     })->name('subscription');
+});
+
+// Admin routes
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->group(function () {
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 require __DIR__ . '/settings.php';
