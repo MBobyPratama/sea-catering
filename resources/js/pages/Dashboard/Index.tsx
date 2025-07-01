@@ -13,6 +13,9 @@ interface MealPlan {
 interface Subscription {
     id: number;
     meal_plan: MealPlan;
+    meal_types: string[];
+    delivery_days: string[];
+    total_price: number;
     status: string;
     paused_from: string | null;
     paused_until: string | null;
@@ -145,13 +148,16 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
                                             
                                             <div className="space-y-2 mb-4">
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Price:</strong> ${subscription.meal_plan.price}/month
+                                                    <strong>Plan:</strong> {subscription.meal_plan.name} (Rp{subscription.meal_plan.price.toLocaleString('id-ID')}/meal)
                                                 </p>
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Meal Types:</strong> {subscription.meal_plan.meal_types}
+                                                    <strong>Total Monthly Price:</strong> Rp{subscription.total_price.toLocaleString('id-ID')}
                                                 </p>
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Delivery Days:</strong> {subscription.meal_plan.delivery_days}
+                                                    <strong>Meal Types:</strong> {Array.isArray(subscription.meal_types) ? subscription.meal_types.join(', ') : subscription.meal_types}
+                                                </p>
+                                                <p className="text-sm text-gray-300">
+                                                    <strong>Delivery Days:</strong> {Array.isArray(subscription.delivery_days) ? subscription.delivery_days.join(', ') : subscription.delivery_days}
                                                 </p>
                                                 {subscription.status === 'paused' && subscription.paused_until && (
                                                     <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">

@@ -183,6 +183,14 @@ export default function Subscription() {
                         <p className="text-3xl font-extrabold text-green-400 mt-2">
                             Rp{totalPrice.toLocaleString('id-ID')},00
                         </p>
+                        {totalPrice > 0 && (
+                            <div className="mt-2 text-sm text-gray-400">
+                                <p>Calculation: Plan Price × Meal Types × Delivery Days × 4.3</p>
+                                <p>
+                                    Rp{parseInt(data.plan).toLocaleString('id-ID')} × {data.mealTypes.length} × {data.deliveryDays.length} × 4.3 = Rp{totalPrice.toLocaleString('id-ID')}
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Submit Button */}
