@@ -1,25 +1,36 @@
 import GuestLayout from '@/layouts/GuestLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage, useForm } from '@inertiajs/react';
+import { type SharedData } from '@/types';
 
-const testimonials = [
-    {
-        name: 'Michael Johnson',
-        review: 'The meals are delicious and have helped me a lot in my diet program. Highly recommended!',
-        rating: 5,
-    },
-    {
-        name: 'Kimberly Smith',
-        review: 'Excellent service and food quality. The delivery is always on time.',
-        rating: 5,
-    },
-    {
-        name: 'David Brown',
-        review: 'A great choice for healthy and practical food. The menu is very varied.',
-        rating: 4,
-    },
-];
+interface Testimonial {
+    name: string;
+    review: string;
+    rating: number;
+}
 
-export default function Welcome() {
+interface Props {
+    testimonials: Testimonial[];
+    flash?: {
+        success?: string;
+    };
+}
+
+export default function Welcome({ testimonials, flash }: Props) {
+    const { auth } = usePage<SharedData>().props;
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: '',
+        review: '',
+        rating: 5,
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('testimonials.store'), {
+            onSuccess: () => {
+                reset();
+            },
+        });
+    };
     return (
         <GuestLayout title="Welcome to SEA Catering">
             {/* Hero Section */}
@@ -81,26 +92,60 @@ export default function Welcome() {
                     </div>
                     <div className="text-center mt-12">
                         <h4 className="text-2xl font-bold mb-4">Leave a Testimonial</h4>
-                        <form className="max-w-xl mx-auto">
-                            <div className="mb-4">
-                                <input type="text" placeholder="Your Name" className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        {auth.user ? (
+                            <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
+                                <div className="mb-4">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Your Name" 
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                        required
+                                    />
+                                    {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
+                                </div>
+                                <div className="mb-4">
+                                    <textarea 
+                                        placeholder="Your Review" 
+                                        rows={4} 
+                                        value={data.review}
+                                        onChange={(e) => setData('review', e.target.value)}
+                                        className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    ></textarea>
+                                    {errors.review && <div className="text-red-500 text-sm mt-1">{errors.review}</div>}
+                                </div>
+                                <div className="mb-4">
+                                    <select 
+                                        value={data.rating}
+                                        onChange={(e) => setData('rating', parseInt(e.target.value))}
+                                        className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value={5}>5 Stars</option>
+                                        <option value={4}>4 Stars</option>
+                                        <option value={3}>3 Stars</option>
+                                        <option value={2}>2 Stars</option>
+                                        <option value={1}>1 Star</option>
+                                    </select>
+                                    {errors.rating && <div className="text-red-500 text-sm mt-1">{errors.rating}</div>}
+                                </div>
+                                <button 
+                                    type="submit" 
+                                    disabled={processing}
+                                    className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-3 rounded-md font-medium"
+                                >
+                                    {processing ? 'Submitting...' : 'Submit Review'}
+                                </button>
+                            </form>
+                        ) : (
+                            <div className="max-w-xl mx-auto text-center">
+                                <p className="text-gray-400 mb-4">Please login to leave a testimonial</p>
+                                <a href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium inline-block">
+                                    Login to Leave Review
+                                </a>
                             </div>
-                            <div className="mb-4">
-                                <textarea placeholder="Your Review" rows={4} className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            </div>
-                            <div className="mb-4">
-                                <select className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="5">5 Stars</option>
-                                    <option value="4">4 Stars</option>
-                                    <option value="3">3 Stars</option>
-                                    <option value="2">2 Stars</option>
-                                    <option value="1">1 Star</option>
-                                </select>
-                            </div>
-                            <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium">
-                                Submit Review
-                            </button>
-                        </form>
+                        )}
                     </div>
                 </div>
             </section>

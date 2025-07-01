@@ -57,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the testimonials for the user.
+     */
+    public function testimonials(): HasMany
+    {
+        return $this->hasMany(Testimonial::class);
+    }
+
+    /**
      * Check if the user is an admin.
      */
     public function isAdmin(): bool

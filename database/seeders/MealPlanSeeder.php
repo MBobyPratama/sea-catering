@@ -18,31 +18,31 @@ class MealPlanSeeder extends Seeder
                 'name' => 'Basic Plan',
                 'description' => 'Simple and healthy meals for everyday',
                 'price' => 150.00,
-                'duration_days' => 7,
+                'details' => 'Includes 3 meals per day with balanced nutrition for weight management.',
             ],
             [
                 'name' => 'Premium Plan',
                 'description' => 'High-quality ingredients with premium recipes',
                 'price' => 250.00,
-                'duration_days' => 7,
+                'details' => 'Premium ingredients, chef-prepared meals with exotic flavors and superfoods.',
             ],
             [
                 'name' => 'Family Plan',
                 'description' => 'Perfect for families with larger portions',
                 'price' => 400.00,
-                'duration_days' => 7,
+                'details' => 'Family-sized portions for 4 people, kid-friendly options included.',
             ],
             [
                 'name' => 'Monthly Basic',
                 'description' => 'Basic plan for a full month',
                 'price' => 600.00,
-                'duration_days' => 30,
+                'details' => 'Cost-effective monthly subscription with consistent daily meals.',
             ],
             [
                 'name' => 'Monthly Premium',
                 'description' => 'Premium plan for a full month',
                 'price' => 1000.00,
-                'duration_days' => 30,
+                'details' => 'Monthly premium subscription with variety and luxury meal options.',
             ],
         ];
 

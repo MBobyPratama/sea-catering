@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\TestimonialController;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact');
@@ -25,6 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/subscription', function () {
         return Inertia::render('Subscription');
     })->name('subscription');
+
+    // Testimonial route for authenticated users
+    Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
 });
 
 // Admin routes
