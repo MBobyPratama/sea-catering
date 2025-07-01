@@ -62,4 +62,19 @@ class DashboardController extends Controller
 
     return redirect()->back()->with('success', 'Subscription cancelled successfully.');
   }
+
+  /**
+   * Activate a paused subscription.
+   */
+  public function activateSubscription(\App\Models\Subscription $subscription)
+  {
+    // Ensure the subscription belongs to the authenticated user
+    if ($subscription->user_id !== Auth::id()) {
+      abort(403, 'Unauthorized');
+    }
+
+    $subscription->activate();
+
+    return redirect()->back()->with('success', 'Subscription activated successfully.');
+  }
 }

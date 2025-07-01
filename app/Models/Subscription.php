@@ -64,12 +64,7 @@ class Subscription extends Model
      */
     public function isPaused(): bool
     {
-        if (!$this->paused_from || !$this->paused_until) {
-            return false;
-        }
-
-        $now = now();
-        return $now->between($this->paused_from, $this->paused_until);
+        return $this->status === 'paused';
     }
 
     /**
@@ -78,8 +73,21 @@ class Subscription extends Model
     public function pause(\DateTime $from, \DateTime $until): void
     {
         $this->update([
+            'status' => 'paused',
             'paused_from' => $from,
             'paused_until' => $until,
+        ]);
+    }
+
+    /**
+     * Activate/Resume the subscription.
+     */
+    public function activate(): void
+    {
+        $this->update([
+            'status' => 'active',
+            'paused_from' => null,
+            'paused_until' => null,
         ]);
     }
 

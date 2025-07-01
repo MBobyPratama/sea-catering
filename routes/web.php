@@ -10,6 +10,10 @@ use App\Http\Controllers\SubscriptionController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
+Route::get('/menu', function () {
+    return Inertia::render('Menu');
+})->name('menu');
+
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
@@ -18,10 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('subscription/{subscription}/pause', [DashboardController::class, 'pauseSubscription'])->name('subscription.pause');
     Route::post('subscription/{subscription}/cancel', [DashboardController::class, 'cancelSubscription'])->name('subscription.cancel');
-
-    Route::get('/menu', function () {
-        return Inertia::render('Menu');
-    })->name('menu');
+    Route::post('subscription/{subscription}/activate', [DashboardController::class, 'activateSubscription'])->name('subscription.activate');
 
     Route::get('/subscription', [SubscriptionController::class, 'create'])->name('subscription');
     Route::post('/subscription', [SubscriptionController::class, 'store'])->name('subscription.store');

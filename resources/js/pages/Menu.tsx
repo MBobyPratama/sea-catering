@@ -1,25 +1,26 @@
 import GuestLayout from '@/layouts/GuestLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { type SharedData } from '@/types';
 
 const mealPlans = [
     {
-        name: 'Weight Loss Plan',
-        price: 'IDR 500,000 / week',
+        name: 'Diet Plan',
+        price: 'IDR 30.000 / meal',
         description: 'Low-calorie meals designed to help you shed pounds without sacrificing flavor.',
         image: '/storage/assets/food-example-2.png',
         details: 'Includes 5 lunches and 5 dinners per week. Average of 400-500 calories per meal. Gluten-free options available.'
     },
     {
-        name: 'Muscle Gain Plan',
-        price: 'IDR 650,000 / week',
+        name: 'Protein Plan',
+        price: 'IDR 40.000 / meal',
         description: 'High-protein meals to fuel your workouts and help you build lean muscle.',
         image: '/storage/assets/food-example-3.png',
         details: 'Includes 5 lunches and 5 dinners per week. Average of 600-750 calories and 40g of protein per meal.'
     },
     {
-        name: 'Vegan Plan',
-        price: 'IDR 550,000 / week',
+        name: 'Royal Plan',
+        price: 'IDR 60.000 / meal',
         description: '100% plant-based meals that are both nutritious and delicious.',
         image: '/storage/assets/food-example-4.png',
         details: 'Includes 5 lunches and 5 dinners per week. All meals are free of meat, dairy, and other animal products.'
@@ -36,6 +37,7 @@ interface MealPlan {
 
 export default function Menu() {
     const [selectedPlan, setSelectedPlan] = useState<MealPlan | null>(null);
+    const { auth } = usePage<SharedData>().props;
 
     return (
         <GuestLayout title="Menu">
@@ -49,9 +51,24 @@ export default function Menu() {
                                 <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                                 <p className="text-gray-400 mb-2">{plan.price}</p>
                                 <p className="text-gray-400 mb-4">{plan.description}</p>
-                                <button onClick={() => setSelectedPlan(plan)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                <button onClick={() => setSelectedPlan(plan)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium mr-2">
                                     See More Details
                                 </button>
+                                {auth.user ? (
+                                    <Link 
+                                        href="/subscription" 
+                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
+                                    >
+                                        Subscribe Now
+                                    </Link>
+                                ) : (
+                                    <Link 
+                                        href="/login" 
+                                        className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
+                                    >
+                                        Login to Subscribe
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     ))}
