@@ -15,6 +15,13 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'meal_plan_id',
+        'name',
+        'phone',
+        'plan',
+        'meal_types',
+        'delivery_days',
+        'allergies',
+        'total_price',
         'status',
         'cancelled_at',
         'reactivated_at',
@@ -28,6 +35,8 @@ class Subscription extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'meal_types' => 'array',
+        'delivery_days' => 'array',
         'cancelled_at' => 'datetime',
         'reactivated_at' => 'datetime',
         'paused_from' => 'datetime',

@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\SubscriptionController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -22,9 +23,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Menu');
     })->name('menu');
 
-    Route::get('/subscription', function () {
-        return Inertia::render('Subscription');
-    })->name('subscription');
+    Route::get('/subscription', [SubscriptionController::class, 'create'])->name('subscription');
+    Route::post('/subscription', [SubscriptionController::class, 'store'])->name('subscription.store');
 
     // Testimonial route for authenticated users
     Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');

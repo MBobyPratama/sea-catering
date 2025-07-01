@@ -1,8 +1,9 @@
 import GuestLayout from '@/layouts/GuestLayout';
-import { useState, useEffect, FormEventHandler } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm, Head } from '@inertiajs/react';
 
 export default function Subscription() {
-    const [formData, setFormData] = useState({
+    const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         phone: '',
         plan: '30000',
@@ -23,9 +24,9 @@ export default function Subscription() {
     const deliveryDayOptions = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     useEffect(() => {
-        const planPrice = parseInt(formData.plan);
-        const numMealTypes = formData.mealTypes.length;
-        const numDeliveryDays = formData.deliveryDays.length;
+        const planPrice = parseInt(data.plan);
+        const numMealTypes = data.mealTypes.length;
+        const numDeliveryDays = data.deliveryDays.length;
 
         if (numMealTypes > 0 && numDeliveryDays > 0) {
             const price = planPrice * numMealTypes * numDeliveryDays * 4.3;
@@ -33,24 +34,47 @@ export default function Subscription() {
         } else {
             setTotalPrice(0);
         }
-    }, [formData]);
+    }, [data]);
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'mealTypes' | 'deliveryDays') => {
         const { value, checked } = e.target;
-        setFormData(prev => {
-            const currentValues = prev[field];
-            if (checked) {
-                return { ...prev, [field]: [...currentValues, value] };
-            } else {
-                return { ...prev, [field]: currentValues.filter(item => item !== value) };
-            }
-        });
+        const currentValues = data[field];
+        if (checked) {
+            setData(field, [...currentValues, value]);
+        } else {
+            setData(field, currentValues.filter((item: string) => item !== value));
+        }
     };
 
-    const handleSubmit: FormEventHandler = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Later, this will submit to the backend.
-        console.log(formData);
+        
+        // Basic validation
+        if (!data.name.trim() || !data.phone.trim()) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        if (data.mealTypes.length === 0) {
+            alert('Please select at least one meal type.');
+            return;
+        }
+        
+        if (data.deliveryDays.length === 0) {
+            alert('Please select at least one delivery day.');
+            return;
+        }
+        
+        post(route('subscription.store'), {
+            onSuccess: () => {
+                alert('Subscription created successfully! Redirecting to your dashboard...');
+                reset();
+            },
+            onError: (errors) => {
+                console.error('Subscription error:', errors);
+                alert('There was an error creating your subscription. Please try again.');
+            },
+        });
     };
 
     return (
@@ -66,11 +90,12 @@ export default function Subscription() {
                         <input
                             type="text"
                             id="name"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={data.name}
+                            onChange={(e) => setData('name', e.target.value)}
+                            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
+                        {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
                     </div>
 
                     {/* Phone Number */}
@@ -79,25 +104,27 @@ export default function Subscription() {
                         <input
                             type="tel"
                             id="phone"
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={data.phone}
+                            onChange={(e) => setData('phone', e.target.value)}
+                            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
+                        {errors.phone && <div className="text-red-500 text-sm mt-1">{errors.phone}</div>}
                     </div>
 
                     {/* Plan Selection */}
                     <div className="mb-6">
                         <label className="block text-white text-sm font-bold mb-2">Select Your Plan *</label>
                         <select
-                            value={formData.plan}
-                            onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
-                            className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={data.plan}
+                            onChange={(e) => setData('plan', e.target.value)}
+                            className="w-full p-3 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             {planOptions.map(plan => (
                                 <option key={plan.name} value={plan.price}>{plan.name} - Rp{parseInt(plan.price).toLocaleString('id-ID')},00 per meal</option>
                             ))}
                         </select>
+                        {errors.plan && <div className="text-red-500 text-sm mt-1">{errors.plan}</div>}
                     </div>
 
                     {/* Meal Type */}
@@ -142,11 +169,12 @@ export default function Subscription() {
                         <textarea
                             id="allergies"
                             rows={4}
-                            value={formData.allergies}
-                            onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                            value={data.allergies}
+                            onChange={(e) => setData('allergies', e.target.value)}
                             className="w-full p-3 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="e.g., peanuts, shellfish"
                         ></textarea>
+                        {errors.allergies && <div className="text-red-500 text-sm mt-1">{errors.allergies}</div>}
                     </div>
 
                     {/* Total Price */}
@@ -159,8 +187,12 @@ export default function Subscription() {
 
                     {/* Submit Button */}
                     <div className="text-center">
-                        <button type="submit" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md font-medium text-lg">
-                            Subscribe Now
+                        <button 
+                            type="submit" 
+                            disabled={processing}
+                            className="bg-green-600 hover:bg-green-700 disabled:bg-gray-500 text-white px-8 py-3 rounded-md font-medium text-lg"
+                        >
+                            {processing ? 'Processing...' : 'Subscribe Now'}
                         </button>
                     </div>
                 </form>
