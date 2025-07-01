@@ -13,6 +13,9 @@ interface MealPlan {
 interface Subscription {
     id: number;
     meal_plan: MealPlan;
+    meal_types: string[];
+    delivery_days: string[];
+    total_price: number;
     status: string;
     paused_from: string | null;
     paused_until: string | null;
@@ -46,6 +49,14 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
         setShowCancelModal(true);
     };
 
+    const handleActivate = (subscription: Subscription) => {
+        router.post(route('subscription.activate', subscription.id), {}, {
+            onSuccess: () => {
+                // Optional: show success message
+            },
+        });
+    };
+
     const submitPause = (e: React.FormEvent) => {
         e.preventDefault();
         if (selectedSubscription) {
@@ -69,22 +80,18 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
     };
 
     const isPaused = (subscription: Subscription): boolean => {
-        if (!subscription.paused_from || !subscription.paused_until) return false;
-        const now = new Date();
-        const pausedFrom = new Date(subscription.paused_from);
-        const pausedUntil = new Date(subscription.paused_until);
-        return now >= pausedFrom && now <= pausedUntil;
+        return subscription.status === 'paused';
     };
 
     const getStatusText = (subscription: Subscription): string => {
         if (subscription.status === 'cancelled') return 'Cancelled';
-        if (isPaused(subscription)) return 'Paused';
+        if (subscription.status === 'paused') return 'Paused';
         return 'Active';
     };
 
     const getStatusColor = (subscription: Subscription): string => {
         if (subscription.status === 'cancelled') return 'text-red-600';
-        if (isPaused(subscription)) return 'text-yellow-600';
+        if (subscription.status === 'paused') return 'text-yellow-600';
         return 'text-green-600';
     };
 
@@ -131,7 +138,7 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                                     subscription.status === 'cancelled' 
                                                         ? 'bg-red-100 text-red-800' 
-                                                        : isPaused(subscription)
+                                                        : subscription.status === 'paused'
                                                             ? 'bg-yellow-100 text-yellow-800'
                                                             : 'bg-green-100 text-green-800'
                                                 }`}>
@@ -141,18 +148,21 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
                                             
                                             <div className="space-y-2 mb-4">
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Price:</strong> ${subscription.meal_plan.price}/month
+                                                    <strong>Plan:</strong> {subscription.meal_plan.name} (Rp{subscription.meal_plan.price.toLocaleString('id-ID')}/meal)
                                                 </p>
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Meal Types:</strong> {subscription.meal_plan.meal_types}
+                                                    <strong>Total Monthly Price:</strong> Rp{subscription.total_price.toLocaleString('id-ID')}
                                                 </p>
                                                 <p className="text-sm text-gray-300">
-                                                    <strong>Delivery Days:</strong> {subscription.meal_plan.delivery_days}
+                                                    <strong>Meal Types:</strong> {Array.isArray(subscription.meal_types) ? subscription.meal_types.join(', ') : subscription.meal_types}
                                                 </p>
-                                                {isPaused(subscription) && (
+                                                <p className="text-sm text-gray-300">
+                                                    <strong>Delivery Days:</strong> {Array.isArray(subscription.delivery_days) ? subscription.delivery_days.join(', ') : subscription.delivery_days}
+                                                </p>
+                                                {subscription.status === 'paused' && subscription.paused_until && (
                                                     <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                                                         <p className="text-sm text-yellow-800">
-                                                            <strong>Paused until:</strong> {new Date(subscription.paused_until!).toLocaleDateString()}
+                                                            <strong>Paused until:</strong> {new Date(subscription.paused_until).toLocaleDateString()}
                                                         </p>
                                                     </div>
                                                 )}
@@ -167,7 +177,14 @@ const Dashboard: React.FC<Props> = ({ subscriptions, flash }) => {
                                             
                                             {subscription.status !== 'cancelled' && (
                                                 <div className="flex gap-2">
-                                                    {!isPaused(subscription) && (
+                                                    {subscription.status === 'paused' ? (
+                                                        <button 
+                                                            onClick={() => handleActivate(subscription)}
+                                                            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm transition-colors"
+                                                        >
+                                                            Activate
+                                                        </button>
+                                                    ) : (
                                                         <button 
                                                             onClick={() => handlePause(subscription)}
                                                             className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-sm transition-colors"

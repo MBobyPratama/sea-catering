@@ -1,6 +1,7 @@
 import GuestLayout from '@/layouts/GuestLayout';
 import { Head, usePage, useForm } from '@inertiajs/react';
 import { type SharedData } from '@/types';
+import { useState, useEffect } from 'react';
 
 interface Testimonial {
     name: string;
@@ -23,6 +24,26 @@ export default function Welcome({ testimonials, flash }: Props) {
         rating: 5,
     });
 
+    // Carousel state for food images
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const foodImages = [
+        '/storage/assets/food-example-1.png',
+        '/storage/assets/food-example-2.png',
+        '/storage/assets/food-example-3.png',
+        '/storage/assets/food-example-4.png',
+    ];
+
+    // Auto-slide effect
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentImageIndex((prevIndex) => 
+                prevIndex === foodImages.length - 1 ? 0 : prevIndex + 1
+            );
+        }, 3000); // Change image every 3 seconds
+
+        return () => clearInterval(timer);
+    }, [foodImages.length]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route('testimonials.store'), {
@@ -35,7 +56,38 @@ export default function Welcome({ testimonials, flash }: Props) {
         <GuestLayout title="Welcome to SEA Catering">
             {/* Hero Section */}
             <div className="container mx-auto px-6 py-16 text-center">
-                <img src="/storage/assets/food-example-1.png" alt="SEA Catering Hero" className="w-1/2 md:w-1/3 lg:w-1/4 mx-auto mb-8 rounded-lg shadow-lg" />
+                {/* Food Image Carousel */}
+                <div className="relative w-1/2 md:w-1/3 lg:w-1/4 mx-auto mb-8 overflow-hidden rounded-lg shadow-lg">
+                    <div 
+                        className="flex transition-transform duration-500 ease-in-out"
+                        style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                    >
+                        {foodImages.map((image, index) => (
+                            <img 
+                                key={index}
+                                src={image} 
+                                alt={`SEA Catering Food ${index + 1}`} 
+                                className="w-full h-auto flex-shrink-0"
+                            />
+                        ))}
+                    </div>
+                    
+                    {/* Carousel Indicators */}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        {foodImages.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setCurrentImageIndex(index)}
+                                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                                    index === currentImageIndex 
+                                        ? 'bg-white' 
+                                        : 'bg-white/50 hover:bg-white/75'
+                                }`}
+                            />
+                        ))}
+                    </div>
+                </div>
+
                 <h2 className="text-5xl font-extrabold mb-4">Healthy Meals, Anytime, Anywhere</h2>
                 <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                     Welcome to SEA Catering, your number one source for customizable healthy meal plans. We're dedicated to giving you the very best of nutritious and delicious food, with a focus on quality, convenience, and delivery all across Indonesia.

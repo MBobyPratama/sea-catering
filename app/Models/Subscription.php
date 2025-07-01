@@ -15,6 +15,13 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'meal_plan_id',
+        'name',
+        'phone',
+        'plan',
+        'meal_types',
+        'delivery_days',
+        'allergies',
+        'total_price',
         'status',
         'cancelled_at',
         'reactivated_at',
@@ -28,6 +35,8 @@ class Subscription extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'meal_types' => 'array',
+        'delivery_days' => 'array',
         'cancelled_at' => 'datetime',
         'reactivated_at' => 'datetime',
         'paused_from' => 'datetime',
@@ -55,12 +64,7 @@ class Subscription extends Model
      */
     public function isPaused(): bool
     {
-        if (!$this->paused_from || !$this->paused_until) {
-            return false;
-        }
-
-        $now = now();
-        return $now->between($this->paused_from, $this->paused_until);
+        return $this->status === 'paused';
     }
 
     /**
@@ -69,8 +73,21 @@ class Subscription extends Model
     public function pause(\DateTime $from, \DateTime $until): void
     {
         $this->update([
+            'status' => 'paused',
             'paused_from' => $from,
             'paused_until' => $until,
+        ]);
+    }
+
+    /**
+     * Activate/Resume the subscription.
+     */
+    public function activate(): void
+    {
+        $this->update([
+            'status' => 'active',
+            'paused_from' => null,
+            'paused_until' => null,
         ]);
     }
 

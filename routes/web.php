@@ -6,8 +6,13 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\SubscriptionController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+
+Route::get('/menu', function () {
+    return Inertia::render('Menu');
+})->name('menu');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact');
@@ -17,14 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('subscription/{subscription}/pause', [DashboardController::class, 'pauseSubscription'])->name('subscription.pause');
     Route::post('subscription/{subscription}/cancel', [DashboardController::class, 'cancelSubscription'])->name('subscription.cancel');
+    Route::post('subscription/{subscription}/activate', [DashboardController::class, 'activateSubscription'])->name('subscription.activate');
 
-    Route::get('/menu', function () {
-        return Inertia::render('Menu');
-    })->name('menu');
-
-    Route::get('/subscription', function () {
-        return Inertia::render('Subscription');
-    })->name('subscription');
+    Route::get('/subscription', [SubscriptionController::class, 'create'])->name('subscription');
+    Route::post('/subscription', [SubscriptionController::class, 'store'])->name('subscription.store');
 
     // Testimonial route for authenticated users
     Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');

@@ -20,7 +20,9 @@ export default function Authenticated({ children }: PropsWithChildren) {
             {/* Header */}
             <header className="container mx-auto px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center">
-                    <img src="/storage/assets/sea-logo.png" alt="SEA Catering Logo" className="h-15 mr-3" />
+                    <Link href="/">
+                        <img src="/storage/assets/sea-logo.png" alt="SEA Catering Logo" className="h-15 mr-3 cursor-pointer hover:opacity-80 transition-opacity" />
+                    </Link>
                 </div>
                 <nav className="hidden md:flex items-center">
                     {navLinks.map((link) => (
