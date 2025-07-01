@@ -16,6 +16,24 @@
 
 https://sea-catering-master-igspxr.laravel.cloud/
 
+## 👥 Default User Accounts
+
+The application comes with pre-configured accounts for testing:
+
+### Admin Account
+```
+Email: admin@seacatering.com
+Password: admin123
+Role: admin
+```
+
+### Test User Account
+```
+Email: user@seacatering.com
+Password: password
+Role: user
+```
+
 ## 🌟 About SEA Catering
 
 SEA Catering is a comprehensive meal subscription platform that connects health-conscious customers with customizable, nutritious meal plans. Our platform offers:
@@ -213,24 +231,6 @@ npm run dev
 - review (Text)
 - rating (Integer)
 - created_at, updated_at (Timestamps)
-```
-
-## 👥 Default User Accounts
-
-The application comes with pre-configured accounts for testing:
-
-### Admin Account
-```
-Email: admin@seacatering.com
-Password: admin123
-Role: admin
-```
-
-### Test User Account
-```
-Email: user@seacatering.com
-Password: password
-Role: user
 ```
 
 ## 🔗 API Routes
