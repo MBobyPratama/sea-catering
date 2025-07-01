@@ -1,5 +1,6 @@
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, usePage } from '@inertiajs/react';
 import { useState, type ReactNode } from 'react';
+import { type SharedData } from '@/types';
 
 interface GuestLayoutProps {
     children: ReactNode;
@@ -8,6 +9,7 @@ interface GuestLayoutProps {
 
 export default function GuestLayout({ children, title }: GuestLayoutProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { auth } = usePage<SharedData>().props;
 
     const navLinks = [
         { href: '/', name: 'Home' },
@@ -23,8 +25,9 @@ export default function GuestLayout({ children, title }: GuestLayoutProps) {
                 {/* Header */}
                 <header className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center">
-                        <img src="/storage/assets/sea-logo.png" alt="SEA Catering Logo" className="h-10 mr-3" />
-                        <span className="font-bold text-xl">SEA Catering</span>
+                        <Link href="/">
+                            <img src="/storage/assets/sea-logo.png" alt="SEA Catering Logo" className="h-15 mr-3 cursor-pointer hover:opacity-80 transition-opacity" />
+                        </Link>
                     </div>
                     <nav className="hidden md:flex items-center">
                         {navLinks.map((link) => (
@@ -38,8 +41,37 @@ export default function GuestLayout({ children, title }: GuestLayoutProps) {
                                 {link.name}
                             </Link>
                         ))}
-                        <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium ml-4">Login</Link>
-                        <Link href="/register" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium ml-2">Register</Link>
+                        {auth.user && (
+                            <Link 
+                                href="/dashboard" 
+                                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 ml-4"
+                            >
+                                Dashboard
+                            </Link>
+                        )}
+                        {auth.user && (auth.user as any).role === 'admin' && (
+                            <Link 
+                                href="/admin/dashboard" 
+                                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium bg-yellow-600 hover:bg-yellow-700 ml-4"
+                            >
+                                Admin Dashboard
+                            </Link>
+                        )}
+                        {auth.user ? (
+                            <Link 
+                                href="/logout" 
+                                method="post" 
+                                as="button" 
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium ml-4"
+                            >
+                                Logout
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium ml-4">Login</Link>
+                                <Link href="/register" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium ml-2">Register</Link>
+                            </>
+                        )}
                     </nav>
                     <div className="md:hidden">
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -66,8 +98,37 @@ export default function GuestLayout({ children, title }: GuestLayoutProps) {
                                 {link.name}
                             </Link>
                         ))}
-                        <Link href="/login" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium m-2">Login</Link>
-                        <Link href="/register" className="block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium m-2">Register</Link>
+                        {auth.user && (
+                            <Link 
+                                href="/dashboard" 
+                                className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium bg-blue-600 hover:bg-blue-700 m-2"
+                            >
+                                Dashboard
+                            </Link>
+                        )}
+                        {auth.user && (auth.user as any).role === 'admin' && (
+                            <Link 
+                                href="/admin/dashboard" 
+                                className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-medium bg-yellow-600 hover:bg-yellow-700 m-2"
+                            >
+                                Admin Dashboard
+                            </Link>
+                        )}
+                        {auth.user ? (
+                            <Link 
+                                href="/logout" 
+                                method="post" 
+                                as="button" 
+                                className="block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium m-2"
+                            >
+                                Logout
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/login" className="block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium m-2">Login</Link>
+                                <Link href="/register" className="block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium m-2">Register</Link>
+                            </>
+                        )}
                     </nav>
                 )}
 
